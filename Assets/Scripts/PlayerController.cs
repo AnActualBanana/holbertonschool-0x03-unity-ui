@@ -5,17 +5,20 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-	private int score = 0;
+    private int score = 0;
     public Text scoreText;
-	public int health = 5;
+    public int health = 5;
     public Text healthText;
-	private int originalHealth;
+    private int originalHealth;
     private int originalScore;
     public float speed = 10.0f; //(acceleration)
     public float maxSpeed = 20.0f;
     public float deceleration = 35.0f;
     private Vector3 velocity = Vector3.zero;
-	private void Start()
+    public Text winLoseText;
+    public Image winLoseBG;
+
+    private void Start()
     {
         originalHealth = health;
         originalScore = score;
@@ -23,13 +26,16 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-		if (health == 0)
-		{
-			Debug.Log("Game Over!");
-			health = originalHealth;
+        if (health <= 0)
+        {
+            winLoseText.text = "Game Over!";
+            winLoseText.color = Color.white;
+            winLoseBG.color = Color.red;
+            winLoseBG.gameObject.SetActive(true); // enable WinLoseBG element
+            StartCoroutine(LoadScene(3.0f));
+            health = originalHealth;
             score = originalScore;
-            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
-		}
+        }
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
         Vector3 direction = new Vector3(horizontal, 0, vertical);
@@ -42,7 +48,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             velocity -= velocity.normalized * deceleration * Time.deltaTime;
-            if (velocity.magnitude < 0.1f)
+            if (velocity.magnitude < 0.2f)
             {
                 velocity = Vector3.zero;
             }
@@ -50,7 +56,8 @@ public class PlayerController : MonoBehaviour
 
         transform.position += velocity * Time.deltaTime;
     }
-	private void OnTriggerEnter(Collider other)
+
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Pickup"))
         {
@@ -59,23 +66,30 @@ public class PlayerController : MonoBehaviour
             //Debug.Log("Score: " + score);
             other.gameObject.SetActive(false);
         }
-		else if (other.CompareTag("Trap"))
-		{
-			health--;
+        else if (other.CompareTag("Trap"))
+        {
+            health--;
             SetHealthText();
-			//Debug.Log("Health: " + health);
-		}
-		else if (other.CompareTag("Goal"))
-		{
-			Debug.Log("You win!");
-		}
+            //Debug.Log("Health: " + health);
+        }
+        else if (other.CompareTag("Goal"))
+        {
+            Debug.Log("You win!");
+        }
     }
+
     void SetScoreText()
     {
         scoreText.text = "Score: " + score.ToString();
     }
+
     void SetHealthText()
     {
         healthText.text = "Health: " + health.ToString();
+    }
+     IEnumerator LoadScene(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 }
