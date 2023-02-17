@@ -10,4 +10,12 @@ public class MainMenu : MonoBehaviour
 		SceneManager.LoadScene("maze");
 	}
 
+    public void QuitMaze()
+    {
+        #if UNITY_EDITOR
+        Debug.Log("Quit Game");
+        #else
+        Application.Quit();
+        #endif
+    }
 }
