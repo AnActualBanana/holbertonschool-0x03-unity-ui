@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 	private int score = 0;
     public Text scoreText;
 	public int health = 5;
+    public Text healthText;
 	private int originalHealth;
     private int originalScore;
     public float speed = 10.0f; //(acceleration)
@@ -61,7 +62,8 @@ public class PlayerController : MonoBehaviour
 		else if (other.CompareTag("Trap"))
 		{
 			health--;
-			Debug.Log("Health: " + health);
+            SetHealthText();
+			//Debug.Log("Health: " + health);
 		}
 		else if (other.CompareTag("Goal"))
 		{
@@ -71,5 +73,9 @@ public class PlayerController : MonoBehaviour
     void SetScoreText()
     {
         scoreText.text = "Score: " + score.ToString();
+    }
+    void SetHealthText()
+    {
+        healthText.text = "Health: " + health.ToString();
     }
 }
